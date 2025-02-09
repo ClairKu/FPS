@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "FPS/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/FPS/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/FPS/index.html"
+    }
+  ]
+}

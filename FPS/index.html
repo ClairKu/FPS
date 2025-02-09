@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资智囊 - 智能财务规划平台</title>
+    
+    <!-- CDN 依赖 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- 新增自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #3b82f6;
+            --bg-blur: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 豆包风格基础设定 */
+        body {
+            font-family: "HarmonyOS Sans", "Helvetica Neue", system-ui;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        /* 导航栏改造 */
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: var(--bg-blur) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .navbar-brand i {
+            color: var(--primary-color);
+            transition: transform 0.2s;
+        }
+
+        /* 卡片式模块设计 */
+        section {
+            background: var(--bg-blur);
+            backdrop-filter: blur(8px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 按钮样式升级 */
+        .btn {
+            border-radius: 1rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 表单控件美化 */
+        .form-control {
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* 图表容器优化 */
+        canvas {
+            border-radius: 1rem;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 动态交互效果 */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: all 0.2s;
+        }
+        .nav-link.active::after {
+            width: 100%;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <!-- 修改后的导航栏 -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-chart-line"></i> 投资智囊</a>
+            <div class="collapse navbar-collapse">
+                <div class="navbar-nav">
+                    <a class="nav-link" href="#financial-planning">财务规划</a>
+                    <a class="nav-link" href="#asset-diagnosis">资产诊断</a>
+                    <a class="nav-link" href="#investment-report">投资建议</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container mt-5 pt-4">
+        <!-- 财务规划模块 -->
+        <section id="financial-planning" class="mb-5">
+            <h2 class="mb-4"><i class="fas fa-coins"></i> 财务规划</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="financialForm" class="bg-white p-4 rounded shadow">
+                        <div class="mb-3">
+                            <label class="form-label">月收入（元）</label>
+                            <input type="number" class="form-control" required>
+                        </div>
+                        <!-- ... 其他财务输入字段 ... -->
+                        <button type="submit" class="btn btn-primary">生成规划</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-white p-4 rounded shadow">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 资产诊断模块 -->
+        <section id="asset-diagnosis" class="mb-5">
+            <h2 class="mb-4"><i class="fas fa-stethoscope"></i> 资产诊断</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="bg-white p-4 rounded shadow mb-3">
+                        <input type="file" id="excelUpload" class="form-control" accept=".xlsx">
+                        <button class="btn btn-success mt-2" onclick="analyzeAssets()">
+                            <i class="fas fa-chart-pie"></i> 开始诊断
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="bg-white p-4 rounded shadow">
+                        <div id="assetAnalysisResult"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 投资建议模块 -->
+        <section id="investment-report" class="mb-5">
+            <h2 class="mb-4"><i class="fas fa-file-contract"></i> 投资建议书</h2>
+            <div class="bg-white p-4 rounded shadow">
+                <div id="reportContent" class="mb-3"></div>
+                <button class="btn btn-primary" onclick="generatePDF()">
+                    <i class="fas fa-download"></i> 下载建议书
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 资产分析功能
+        async function analyzeAssets() {
+            const file = document.getElementById('excelUpload').files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                
+                // 资产分析逻辑
+                const analysisResult = performAssetAnalysis(jsonData);
+                displayAnalysisResult(analysisResult);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 资产分析核心逻辑
+        function performAssetAnalysis(data) {
+            // 实现资产分类、风险评估、收益分析等逻辑
+            return {
+                totalValue: data.reduce((sum, item) => sum + item.value, 0),
+                riskLevel: calculateRiskLevel(data),
+                assetDistribution: getAssetDistribution(data)
+            };
+        }
+
+        // 生成投资建议书
+        function generateInvestmentReport() {
+            // 整合财务规划和资产诊断结果
+            const reportData = {
+                ...financialData,
+                ...assetAnalysisData
+            };
+            
+            // 生成HTML报告内容
+            const reportContent = `
+                <h3>投资建议书</h3>
+                <p>生成时间：${new Date().toLocaleDateString()}</p>
+                <h4>资产配置建议</h4>
+                <div id="portfolioChart" style="height: 300px;"></div>
+                <!-- 更多报告内容 -->
+            `;
+            
+            document.getElementById('reportContent').innerHTML = reportContent;
+            renderPortfolioChart();
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 使用Chart.js初始化图表
+            new Chart(document.getElementById('financeChart'), {
+                type: 'pie',
+                data: { /* 图表数据 */ }
+            });
+        }
+
+        // 页面初始化
+        $(document).ready(function() {
+            initCharts();
+            // 其他初始化逻辑
+        });
+    </script>
+</body>
+</html> 

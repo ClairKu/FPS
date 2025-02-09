@@ -1,0 +1,51 @@
+/* 全局样式 */
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 导航栏样式 */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand {
+    color: #4f46e5;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #4b5563;
+}
+
+.nav-link.active {
+    color: #4f46e5 !important;
+}
+
+/* 表单样式 */
+.form-control:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+.btn-primary:hover {
+    background-color: #4338ca;
+    border-color: #4338ca;
+}
+
+/* 图表容器 */
+.chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+/* 其他样式 */ 
